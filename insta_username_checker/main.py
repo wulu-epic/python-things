@@ -15,7 +15,7 @@ def check(url):
     page = urllib.request.urlopen(url)
     a = BeautifulSoup(page, "html.parser")
     return a.find_all("div")
-    
+    #have to somehow make this actually work then i can continue working on this but i lost all the motivation to work on this anymore so nahhhhhhhhhhhh
  
 
  
