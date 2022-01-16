@@ -18,7 +18,6 @@ ____    __    ____  __    __   __       __    __
 
 webhook = ""
 
-
 def generatecodes():
     print( "How many codes to generate?")
     num = int(input(''))
@@ -40,15 +39,15 @@ def generatecodes():
             f.write("%s\n" % item)
 
 
-    print("Done generating codes.")
+    print("Done generating codes. Generated: " + str(len(open("codes.txt","r").readlines())) + " codes" )
     time.sleep(1)
 
 def checkCodes():
-    if os.stat("codes.txt").st_size == 0:
+    if len(open("codes.txt","r").readlines()) == 0:
         print("There isnt any codes. You can generate some using this program or use some external one, but make sure they are only the codes. Exiting.")
         time.sleep(1)
         sys.exit()
-    print("Found ", str(os.stat("codes.txt").st_size), " codes.")
+    print("Found ", str(len(open("codes.txt","r").readlines())) + " codes.")
 
     
 
@@ -67,6 +66,8 @@ def checkCodes():
     invalidList = []
     validList = []
 
+    
+
     with open('codes.txt') as f:
         for line in f:
             url = f"https://discordapp.com/api/v9/entitlements/gift-codes/{line}?with_application=false&with_subscription_plan=true"
@@ -82,26 +83,35 @@ def checkCodes():
                 print("discord.gift/"+line.rstrip(), "valid!!!!!!!")
                 validList.append("discord.gift/"+line.rstrip())
                 valid = valid+1
+                with open('valid.txt', 'w') as file:
+                    file.write("discord.gift/"+line.rstrip())
+
+            if requests.get(url).status_code == 404:
+                print("rate limited")
 
             else:
                 print("discord.gift/"+line.rstrip(), "is invalid.")
                 invalid = invalid + 1
                 invalidList.append("discord.gift/"+line.rstrip())
-            if requests.get(url).status_code == 429:
-                pass
+            
+            
+
 
             checked = checked + 1
-            title = "Invalid: " + str(invalid) + " Valid: " + str(valid) + " Remaining: " + str(checked) + "/" + str(os.stat("codes.txt").st_size)
+            title = "Invalid: " + str(invalid) + " Valid: " + str(valid) + " Remaining: " + str(checked) + "/" + str(len(open("codes.txt","r").readlines()))
             system("title " + title )
-        info = "Invalid: " + str(invalid) + " Valid: " + str(valid) + " Remaining: " + str(checked) + "/" + str(os.stat("codes.txt").st_size)
+        info = "Invalid: " + str(invalid) + " Valid: " + str(valid) + " Remaining: " + str(checked) + "/" + str(len(open("codes.txt","r").readlines()))
         print("Finished checkings, you got ", info)
         print("Saving invalid and valid codes...")
-        with open('invalid.txt', 'w') as f:
+
+        with open('invalid.txt', 'w') as g:
             for item in invalidList:
-                f.write("%s\n" % item)
+                g.write("%s\n" % item)
+
         with open('valid.txt', 'w') as f:
             for item in validList:
                 f.write("%s\n" % item)
+
         print("Saved.")
         input()
 
@@ -111,6 +121,7 @@ choice1 = input()
 
 if choice1=="1":
     generatecodes()
+
 
 if choice1=="2":
     checkCodes()
