@@ -3,7 +3,7 @@ import pyperclip
 import time, sys
 
 
-a = "123456789"
+a = "0123456789"
 
 codes = list()
 codeswithURL = list()
