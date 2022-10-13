@@ -154,11 +154,7 @@ class Game:
                     n+=1
                 else:
                     pass
-
-        if n==a:
-            return True
-        else:
-            return False
+        return n==a
 
 
     def game_loop(self):
