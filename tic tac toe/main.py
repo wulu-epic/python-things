@@ -19,16 +19,95 @@ class Game:
             "Player2": "O",
         }
 
+        self.position = {
+            0: "A",
+            1: "B",
+            2: "C",
+        }
+
         self.names = [
             "Player1",
             "Player2"
         ]
+        
+        self.winning_positions = [
+            [
+                "A0",
+                "B1",
+                "C2",
+            ],
+            [
+                "A0",
+                "B0",
+                "C0",
+            ],
+            [
+                "A1",
+                "B1",
+                "C1",
+            ],
+            [
+                "A2",
+                "B2",
+                "C2",
+            ],
+
+            [
+                "A0",
+                "A1",
+                "A2",
+            ],
+
+            [
+                "B0",
+                "B1",
+                "B2",
+            ],
+
+            [
+                "C0",
+                "C1",
+                "C2",
+            ],
+
+            [
+                "C0",
+                "B1",
+                "A2",
+            ],
+        ]
+
+        self.playing_positions = {
+            "Player1": [
+                
+            ],
+
+            "Player2": [
+
+            ],
+        }
 
         self.playing_player = ""
         self.clear = lambda: os.system('cls')
 
+    def is_slice_in_list(self, s,l):
+        return all(item in s for item in l)
+
     def get_player(self, p):
         return self.players[p]
+
+    def check_for_win(self, p):
+        for i in self.winning_positions:
+            if self.is_slice_in_list(self.playing_positions[p], i):
+                print(f"{p} has won! Good game!")
+                return True
+        return False
+    
+    def check_for_draw(self):
+        if self.is_board_full():
+            print("Draw! Good game!")
+            return True
+        return False
 
     def read_input(self, n):
         col, row = self.dictionary[n[0]], n[1]
@@ -40,10 +119,12 @@ class Game:
         value = self.board[int(col) - 1][int(row)]
         if value == " ":
             self.board[int(col) - 1][int(row)] = n
+            self.playing_positions[self.playing_player].append(f"{b[0]}{int(row)}")
             self.display_board()
         else:
+            self.clear()
             print("This is already taken!")
-            pass
+            self.display_board()
 
     def display_board(self):
         #self.clear()
@@ -61,29 +142,35 @@ class Game:
                     self.playing_player = self.names[1]
                     return
             k += 1
-    
-    def check_win(self, n):
-        b=0
-        for p in self.board:
-            for k in p:
-                for item in k:
-                    if item == n:
-                        b=+1
-                    #horizontal
-        if b>=3:
-            print(f"{self.playing_player} has won!")
-            return
-        
-        
+
+    def is_board_full(self):
+        n = 0
+        a = 0
+
+        for i in self.board:
+            for k in i:
+                a+=1
+                if not k == " ":
+                    n+=1
+                else:
+                    pass
+
+        if n==a:
+            return True
+        else:
+            return False
+
 
     def game_loop(self):
             self.get_next_player()
-            b = input(f"[{self.playing_player}] It is your turn! Where to Place?: ").upper()
+            b = input(f"[{self.playing_player} {self.players[self.playing_player]}] It is your turn! Where to Place?: ").upper()
             self.place_val(b, self.players[self.playing_player])
-            self.check_win(self.players[self.playing_player])
-
-            self.game_loop()
-            
+            if self.check_for_win(self.playing_player):
+                return
+            else:
+                if self.check_for_draw():
+                    return
+                self.game_loop()
 
     def main(self):
         print(self.display_board())
@@ -92,7 +179,6 @@ class Game:
         self.place_val(x, self.players[self.playing_player])
 
         self.game_loop()
-
 
 game = Game()
 game.main()
